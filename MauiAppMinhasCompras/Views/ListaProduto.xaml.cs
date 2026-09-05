@@ -72,9 +72,42 @@ public partial class ListaProduto : ContentPage
 		 Resultado: nao consegui :(.
 		apos isso eu resolvi verificar o gabarito na aula da ag5*/
 
-		
+		try
+		{
+			MenuItem Selecionado = sender as MenuItem;
+
+			Produto p = Selecionado.BindingContext as Produto;
+
+			bool comfirm = await DisplayAlert("Tem certeza ?", $"remover {p.Descricao}?", "sim", "Não");
+			if(comfirm)
+			{
+				await App.Db.delete(p.Id);
+				lista.Remove(p);
+			}
+		}
+		catch (Exception ex)
+		{
+			DisplayAlert("ops", ex.Message, "ok");
+		}
 
 
 
+    }
+
+    private void lst_produtos_ItemSelected(object sender, SelectedItemChangedEventArgs e)
+    {
+
+		try
+		{
+			Produto p = e.SelectedItem as Produto;
+			Navigation.PushAsync(new Views.EditarProduto
+			{
+				BindingContext = p,
+			});
+		}
+        catch (Exception ex)
+        {
+            DisplayAlert("ops", ex.Message, "ok");
+        }
     }
 }
