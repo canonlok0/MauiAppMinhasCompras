@@ -53,7 +53,13 @@ namespace MauiAppMinhasCompras.Helpers
 
 
         }
+        public Task<List<Produto>> periodo(DateTime dinicio, DateTime dfim)
+        {
+            return _conn.Table<Produto>()
+                .Where(p => p.DataHora >= dinicio && p.DataHora <= dfim)
+                .ToListAsync();
 
+        }
 
 
     }

@@ -21,6 +21,9 @@
         <Entry x:Name="txt_quantidade" Keyboard="Numeric" />
         <Label Text="Preço unitario:" />
         <Entry x:Name="txt_preco" Keyboard="Numeric" />
+        <Label Text="data:" />
+        <DatePicker x:Name="dp_data" Format="dd/MM/yyyy" />
+
 
     </VerticalStackLayout>
 </ContentPage>

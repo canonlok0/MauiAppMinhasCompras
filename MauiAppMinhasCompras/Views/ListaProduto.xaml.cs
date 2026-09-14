@@ -47,20 +47,32 @@ public partial class ListaProduto : ContentPage
     }
 
 	private async void txt_search_TextChanged(object sender, TextChangedEventArgs e)
-    {
-		
-		string q = e.NewTextValue;
-		/* eu me perguntei o que esse clear faz, e descobrir, tiramdo ela do codigo, que ela, alem de
-		ser responsavel por mostrar o item pesquisado, enquanto "oculta" os outros itens, sem ela, os itens
-		nao pesquisados nao sao ocultados, inutilizando essa função, alem disso ele começa a apresentar
-		o mesmo comportamento, de duplicar os itens da lista, de forma indefinida, parecida com o bug 
-		visto quando se adiciona itens na lista.*/
-		lista.Clear();
+	{
+		try
+		{
+			
 
-        List<Produto> tmp = await App.Db.search(q);
+			string q = e.NewTextValue;
+            lst_produtos.IsRefreshing = true;
+            /* eu me perguntei o que esse clear faz, e descobrir, tiramdo ela do codigo, que ela, alem de
+			ser responsavel por mostrar o item pesquisado, enquanto "oculta" os outros itens, sem ela, os itens
+			nao pesquisados nao sao ocultados, inutilizando essa função, alem disso ele começa a apresentar
+			o mesmo comportamento, de duplicar os itens da lista, de forma indefinida, parecida com o bug 
+			visto quando se adiciona itens na lista.*/
+            lista.Clear();
 
-        tmp.ForEach(i => lista.Add(i));
+			List<Produto> tmp = await App.Db.search(q);
 
+			tmp.ForEach(i => lista.Add(i));
+		}
+		catch (Exception ex)
+		{
+			await DisplayAlert("Ops", ex.Message, "oK");		
+		}
+		finally
+		{
+            lst_produtos.IsRefreshing = false;
+        }
     }
 
     private void ToolbarItem_Clicked_1(object sender, EventArgs e)
@@ -118,6 +130,51 @@ public partial class ListaProduto : ContentPage
         catch (Exception ex)
         {
             DisplayAlert("ops", ex.Message, "ok");
+        }
+    }
+
+    private async void lst_produtos_Refreshing(object sender, EventArgs e)
+    {
+        try
+        {
+            lista.Clear();
+
+            List<Produto> tmp = await App.Db.GetAll();
+
+            tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "Ok");
+        }
+		finally
+		{
+			lst_produtos.IsRefreshing = false;	
+			
+		}
+    }
+
+    private async void Button_Clicked(object sender, EventArgs e)
+    {
+        try
+        {
+            DateTime datainicio = dp_inicio.Date;
+            DateTime datafim = dp_fim.Date;
+
+            lst_produtos.IsRefreshing = true;
+            lista.Clear();
+            List<Produto> tmp = await App.Db.periodo(datainicio, datafim);
+
+			
+            tmp.ForEach(i => lista.Add(i));
+        }
+        catch (Exception ex)
+        {
+            await DisplayAlert("Ops", ex.Message, "oK");
+        }
+        finally
+        {
+            lst_produtos.IsRefreshing = false;
         }
     }
 }
